@@ -4,11 +4,19 @@
 
 
 {% block content %}
-        <p>Hello world </p>
-        <ul>
-            {% for p in products  %}
-                <li>{{p}}</li>
-            {% endfor %}
-        </ul>
-            {{names}}
+<ul>
+    <a href="/register">
+    Register
+    </a>
+    {% for p in products  %}
+        <li>{{ p.name }} - €{{p.price}} - {{p.description}}</li>
+        
+         <a href="/products/{{p.id}}">
+             <img src="{{p.image.url}}" />
+         View
+        </a>
+    {% endfor %}
+
+
+</ul>
 {% endblock %}
