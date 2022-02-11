@@ -2,16 +2,16 @@
 
 {% block title %} {{product.name}} {% endblock %}
 
-
 {% block content %}
 {% if added %}
     <h1> Added to basket</h1>
 {% endif %}
+<div>
 <h1>Name: {{product.name}} - €{{product.price}}</h1>
-<img src="{{product.image.url}}" />
+<img src="{{product.image.url}}" class="center"/>
 <p>
     {{product.description}}
-    <a href="/addbasket/{{product.id}}" class="btn btn-primary">Buy €{{product.price}}</a>
 </p>
-
+<a href="/addbasket/{{product.id}}" class="btn btn-primary">Buy €{{product.price}}</a>
 {% endblock %}
+</div>

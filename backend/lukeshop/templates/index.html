@@ -6,17 +6,22 @@
 {% block content %}
 <ul>
     <a href="/register">
-    Register
+        <p>Don't have an account? Register here.</p>
     </a>
+    <a href="/login">
+        <p>Login here.</p>
+    </a>
+    <div>
     {% for p in products  %}
-        <li>{{ p.name }} - €{{p.price}} - {{p.description}}</li>
+    {{ p.name }} - €{{p.price}} - {{p.description}}</br>
         
          <a href="/products/{{p.id}}">
-             <img src="{{p.image.url}}" />
-         View
+             <img src="{{p.image.url}}"/>
+            <br>View
+            <br><br>
         </a>
     {% endfor %}
-
+    </div>
 
 </ul>
 {% endblock %}

@@ -34,3 +34,4 @@ class Order(models.Model):
     user_id = models.ForeignKey(APIUser, on_delete=models.CASCADE)
     datetime_ordered = models.DateTimeField(auto_now_add=True)
     total_price = models.DecimalField(max_digits=6, decimal_places=2, default=0.0)
+    shipping_addr = models.TextField(default="")

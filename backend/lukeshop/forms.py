@@ -1,8 +1,8 @@
 # forms.py
-from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django import forms
 from django.forms import ModelForm, ModelChoiceField
-from .models import APIUser
+from .models import *
 from django.db import transaction
 
 from django.contrib.auth.forms import AuthenticationForm
@@ -23,3 +23,9 @@ class UserSignupForm(UserCreationForm):
         user.is_admin = False
         user.save()
         return user
+
+class OrderForm(ModelForm):
+    shipping_addr = forms.CharField(label="Shipping address", widget=forms.TextInput(attrs={'placeholder': 'Shipping Address'}))
+    class Meta:
+        model=Order
+        fields = ['shipping_addr']
