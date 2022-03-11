@@ -1,6 +1,18 @@
+import re
 from django.http import HttpResponse
-from django.shortcuts import render
+from django.views.generic import CreateView
+from django.contrib.auth.views import LoginView
+from django.contrib.auth import login, logout
+from django.shortcuts import render, redirect
+from django.contrib.auth.decorators import login_required
+from django.http.response import JsonResponse
+from rest_framework import viewsets
 from .models import *
+from .forms import *
+from .serializers import *
+from rest_framework.permissions import IsAuthenticated, IsAdminUser, AllowAny
+from django.contrib.auth.decorators import login_required
+from rest_framework import generics
 
 def index(request):
     
@@ -47,38 +59,42 @@ def add_to_basket(request, prodid):
     user = request.user
     # is there a shopping basket for the user 
     basket = Basket.objects.filter(user_id=user, is_active=True).first()
-    if not basket:
+    if basket is None:
         # create a new one
-        basket = Basket(user_id = user).save()
+        Basket.objects.create(user_id = user)
+        basket = Basket.objects.filter(user_id=user, is_active=True).first()
     # get the product 
     product = Product.objects.get(id=prodid)
     sbi = BasketItem.objects.filter(basket_id=basket, product_id = product).first()
     if sbi is None:
         # there is no basket item for that product 
-        # create one \
-        sbi = BasketItem(basket_id=basket, product_id = product).save()
+        # create one 
+        sbi = BasketItem(basket_id=basket, product_id = product)
+        sbi.save()
     else:
         # a basket item already exists 
         # just add 1 to the quantity
         sbi.quantity = sbi.quantity+1
         sbi.save()
+
     return render(request, 'product_individual.html', {'product': product, 'added':True})
 
 @login_required
-
 def show_basket(request):
     # get the user object
-    # does the shopping basket exist?
+    # does a shopping basket exist ? -> your basket is empty
     # load all shopping basket items
-    # display on page
+    # display on page 
     user = request.user
     basket = Basket.objects.filter(user_id=user, is_active=True).first()
     if basket is None:
+        #TODO: Show basket empty
         return render(request, 'basket.html', {'empty':True})
     else:
         sbi = BasketItem.objects.filter(basket_id=basket)
-        # is this list empty
+        # is this list empty ? 
         if sbi.exists():
+            # normal flow
             return render(request, 'basket.html', {'basket':basket, 'sbi':sbi})
         else:
             return render(request, 'basket.html', {'empty':True})
@@ -137,3 +153,67 @@ def order(request):
         return render(request, 'orderform.html', {'form':form, 'basket':basket, 'sbi':sbi})
     # check that the data is okay.
     # POST or GET
+
+@login_required
+def previous_orders(request):
+    user = request.user
+    orders = Order.objects.filter(user_id=user)
+    return render(request, 'previous_orders.html', {'orders':orders}) 
+
+class ProductViewSet(viewsets.ModelViewSet):
+    queryset = Product.objects.all()
+    serializer_class = ProductSerializer
+
+class BasketViewSet(viewsets.ModelViewSet):
+  serializer_class = BasketSerializer
+  queryset = Basket.objects.all()
+  permission_classes = [IsAuthenticated]
+
+  def get_queryset(self):
+      user = self.request.user # get the current user
+      if user.is_superuser:
+          return Basket.objects.all() # return all the baskets if a superuser requests
+      else:
+          # For normal users, only return the current active basket
+          shopping_basket = Basket.objects.filter(user_id=user, is_active=True)
+          return shopping_basket
+
+
+class OrderViewSet(viewsets.ModelViewSet):
+    serializer_class = OrderSerializer
+    queryset = Order.objects.all()
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        user = self.request.user # get the current user
+        if user.is_superuser:
+            return Order.objects.all() # return all the baskets if a superuser requests
+        else:
+            # For normal users, only return the current active basket
+            orders = Order.objects.filter(user_id=user)
+            return orders
+
+class APIUserViewSet(viewsets.ModelViewSet):
+    queryset = APIUser.objects.all()
+    serializer_class = APIUserSerializer
+    permission_classes = [IsAuthenticated, IsAdminUser]
+
+class UserRegistrationAPIView(generics.CreateAPIView):
+    serializer_class = UserRegistrationSerializer
+    permission_classes = [AllowAny] #No login is needed to access this route
+    queryset = queryset = APIUser.objects.all()
+
+class AddBasketItemAPIView(generics.CreateAPIView):
+    serializer_class = AddBasketItemSerializer
+    permission_classes = [IsAuthenticated]
+    queryset = BasketItem.objects.all()
+
+class RemoveBasketItemAPIView(generics.CreateAPIView):
+    serializer_class = RemoveBasketItemSerializer
+    permission_classes = [IsAuthenticated]
+    queryset = BasketItem.objects.all()
+
+class CheckoutAPIView(generics.CreateAPIView):
+    serializer_class = CheckoutSerializer
+    permission_classes = [IsAuthenticated]
+    queryset = Order.objects.all()

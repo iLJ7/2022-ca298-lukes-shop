@@ -15,12 +15,23 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from lukeshop import views 
 from django.conf import settings
 from django.conf.urls.static import static
-from lukeshop import views
+from rest_framework_simplejwt.views import (
+    TokenObtainPairView,
+    TokenRefreshView,
+)
+
 
 urlpatterns = [
-    path('', include('lukeshop.urls')),
     path('admin/', admin.site.urls),
-    path('hello/', views.index)
-] + static(settings.MEDIA_URL, document_root= settings.MEDIA_ROOT)
+    path('', include('lukeshop.urls') ),
+    path('api-auth/', include('rest_framework.urls')), 
+    path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+    path('apiregister/', views.UserRegistrationAPIView.as_view(), name="api_register"),
+    path('apiadd/', views.AddBasketItemAPIView.as_view(), name="api_add_to_basket"),
+    path('apiremove/', views.RemoveBasketItemAPIView.as_view(), name="api_remove_from_basket"),
+    path('apicheckout/', views.CheckoutAPIView.as_view(), name="api_checkout"),
+ ] + static(settings.MEDIA_URL, document_root= settings.MEDIA_ROOT)
