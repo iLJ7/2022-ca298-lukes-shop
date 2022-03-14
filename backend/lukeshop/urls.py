@@ -5,10 +5,6 @@ from lukeshop import forms
 from rest_framework import routers
 
 router = routers.DefaultRouter()
-
-
-
-router = routers.DefaultRouter()
 router.register(r'products', views.ProductViewSet)
 router.register(r'basket', views.BasketViewSet)
 router.register(r'orders', views.OrderViewSet)

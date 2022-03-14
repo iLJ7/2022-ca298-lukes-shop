@@ -61,7 +61,6 @@ class AddBasketItemSerializer(serializers.ModelSerializer):
         request = self.context.get('request', None)
         if request:
             current_user = request.user
-
             shopping_basket = Basket.objects.filter(user_id=current_user, is_active=True).first()
             if shopping_basket is None:
                 shopping_basket = Basket.objects.create(user_id=current_user)
