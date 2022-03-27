@@ -12,29 +12,25 @@
             <button type="submit">Login</button>
         </form>
 		<script>
-		    fetch("http://127.0.0.1:8000/api/token/", {
-		        method: 'POST',
-		        headers: {
-		        'Accept': 'application/json',
-		        'Content-Type': 'application/json'
-		        },
-		        body: JSON.stringify({username: uname, password: pass})
+		    
+            function formValidator(event){
+                event.preventDefault();
 
-	        }).then(response=>response.json())
-	        .then(data=>{
-                console.log(data); // still log it so we can debug
-                if('access' in data){
-		            let accessToken = data['access'];
-                    let refreshToken = data['refresh'];
-                    localStorage.setItem("access", accessToken);
-                    localStorage.setItem("refresh", refreshToken);
-                    window.location.href = "/"; // the "/" is the homepage for node http://127.0.0.1:3000
+                let username = document.getElementById("username").value;
+                let password = document.getElementById("password-input").value;
+                if( username == ""){
+                    alert("Username cannot be null");
                 }
-                
+                else if (password == ""){
+                    alert("Password cannot be null");
+                }
                 else{
-                    alert("username or password invalid");
+                    alert("form is valid");
                 }
-    });
+            }
+            
+            let myform = document.getElementById("login-form");
+            myform.addEventListener('submit', formValidator);
 		</script>
     </body>
 </html>
