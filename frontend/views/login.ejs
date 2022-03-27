@@ -15,8 +15,10 @@
 		    
             function formValidator(event){
                 event.preventDefault();
+
                 let user = document.getElementById("username").value;
                 let pass = document.getElementById("password").value;
+
                 if(user == ""){
                     alert("Username cannot be null");
                 }
@@ -24,7 +26,7 @@
                     alert("Password cannot be null");
                 }
                 else{
-                    alert("form is valid");
+                    alert("Incorrect user or pass.")
                 }
             }
             
