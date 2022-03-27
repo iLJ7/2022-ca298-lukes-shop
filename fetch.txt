@@ -1,0 +1,23 @@
+fetch("http://127.0.0.1:8000/api/token/", {
+    method: 'POST',
+    headers: {
+    'Accept': 'application/json',
+    'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({username: uname, password: pass})
+
+}).then(response=>response.json())
+.then(data=>{
+    console.log(data); // still log it so we can debug
+    if('access' in data){
+        let accessToken = data['access'];
+        let refreshToken = data['refresh'];
+        localStorage.setItem("access", accessToken);
+        localStorage.setItem("refresh", refreshToken);
+        window.location.href = "/"; // the "/" is the homepage for node http://127.0.0.1:3000
+    }
+
+    else{
+        alert("username or password invalid");
+    }
+});
