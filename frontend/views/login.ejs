@@ -6,22 +6,21 @@
         <h1>Login</h1>
         <form id="login-form">
             <label for="username-input">Username</label>
-            <input type="text" name="username-input" id="username" placeholder="Your username" required>
+            <input type="text" name="username-input" id="username" placeholder="Your username">
             <label for="password-input">Password</label>
-            <input type="password" id="password" name="password-input" placeholder="Your password" required>
+            <input type="password" name="password-input" id="password" placeholder="Your password">
             <button type="submit">Login</button>
         </form>
 		<script>
 		    
             function formValidator(event){
                 event.preventDefault();
-
-                let username = document.getElementById("username").value;
-                let password = document.getElementById("password-input").value;
-                if( username == ""){
+                let user = document.getElementById("username").value;
+                let pass = document.getElementById("password").value;
+                if(user == ""){
                     alert("Username cannot be null");
                 }
-                else if (password == ""){
+                else if (pass == ""){
                     alert("Password cannot be null");
                 }
                 else{
