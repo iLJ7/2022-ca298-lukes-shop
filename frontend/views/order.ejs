@@ -1,0 +1,128 @@
+<table id="productTable"> 
+</table>
+<p id="block"></p>
+
+<h1>Order</h1>
+<form id="order-form">
+    <label for="ship-addr">Shipping Address:</label>
+    <input type="text" name="shipping-address" id="shipping-addr" placeholder="Your address">
+    <button type="submit">Order</button>
+</form>
+<script>
+		    
+    function formValidator(event){
+        event.preventDefault();
+
+        let address = document.getElementById("shipping-addr").value;
+
+        if(address == ""){
+            alert("Address cannot be empty.");
+        }
+
+        else{
+            fetch("http://127.0.0.1:8000/apicheckout/", {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' +localStorage.getItem("access")
+                },
+                body: JSON.stringify({shipping_addr: address})
+              }).then(response=>response.json())
+              .then(data=>{
+                  console.log(data);
+              });
+        }
+    }
+    
+    let myform = document.getElementById("order-form");
+    myform.addEventListener('submit', formValidator);
+</script>
+<script>
+        var counter = 0;
+        fetch('http://127.0.0.1:8000/api/basket/', {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' +localStorage.getItem("access")
+            },
+        })
+        .then(response => response.json())
+        .then(data => data.forEach(element => {
+            let items = element.items
+            
+            items.forEach(entry => {
+                let productPrice = entry.price
+                let product_id = entry.product_id
+                let quantity = entry.quantity
+
+                var table = document.getElementById("productTable")
+
+                var row = table.insertRow(counter)
+                var cell1 = row.insertCell(0)
+                var cell2 = row.insertCell(1)
+                var cell3 = row.insertCell(2)
+                var cell4 = row.insertCell(3)
+
+                cell1.innerHTML = 'Image'
+                cell2.innerHTML = "Total: €" + productPrice
+                cell3.innerHTML = "Quantity: " + quantity
+
+                let newButton = document.createElement("button");
+                newButton.innerHTML = "Remove";
+                newButton.onclick = function(){removeProduct(product_id)};
+                cell4.appendChild(newButton)
+
+                counter += 1;
+
+                fetch('http://127.0.0.1:8000/api/products/'+product_id)
+                .then(resp => resp.json())
+                .then(data => {
+                    let image = data['image']
+                    console.log(data)
+                    cell1.innerHTML = "<img src='" + image + "' width='100' height='100'>"
+                })
+
+                function show_image(src, width, height, alt) {
+                    let basket = document.getElementById("basket");
+                    var img = document.createElement("img");
+                    img.src = src;
+                    img.width = width;
+                    img.height = height;
+                    img.alt = alt;
+                    basket.appendChild(img)
+
+                }
+                
+                function removeProduct(product_id){
+                    fetch('http://127.0.0.1:8000/apiremove/', {
+                      method: 'POST',
+                      headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' +localStorage.getItem("access")
+                      },
+                      body: JSON.stringify({
+                        "product_id": parseInt(product_id)
+                      })
+                    })
+                    .then(response=>response.json())
+                    .then(data=>{
+                        console.log(data)
+                    })
+                    window.location.reload()
+                }
+
+            })
+
+            var table = document.getElementById("productTable")
+            let text = document.getElementById("block")
+            var totalRowCount = table.rows.length;
+
+            if (totalRowCount == 0) {
+                text.innerHTML = "Basket is empty. Add products to your basket to make an order."
+            }
+
+        }))
+</script>

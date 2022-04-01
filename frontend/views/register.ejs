@@ -1,23 +1,27 @@
 <html>
     <head>
-			<title>Login Page</title>
+			<title>Register Page</title>
     </head>
     <body>
-        <h1>Login</h1>
-        <form id="login-form">
+        <h1>Register</h1>
+        <form id="register-form">
             <label for="username-input">Username</label>
             <input type="text" name="username-input" id="username" placeholder="Your username">
             <label for="password-input">Password</label>
             <input type="password" name="password-input" id="password" placeholder="Your password">
-            <button type="submit">Login</button>
+            <label for="email-input">E-mail</label>
+            <input type="email" name="email-input" id="email" placeholder="Your e-mail">
+            <button type="submit">Register</button>
         </form>
-		<script>
+
+        <script>
 		    
             function formValidator(event){
                 event.preventDefault();
 
                 let user = document.getElementById("username").value;
                 let pass = document.getElementById("password").value;
+                let email = document.getElementById("email").value;
 
                 if(user == ""){
                     alert("Username cannot be null");
@@ -25,33 +29,27 @@
                 else if (pass == ""){
                     alert("Password cannot be null");
                 }
+                else if (email == ""){
+                    alert("E-mail cannot be null")
+                }
                 else{
-                    fetch("http://127.0.0.1:8000/api/token/", {
+                    fetch("http://127.0.0.1:8000/apiregister/", {
                         method: 'POST',
                         headers: {
                         'Accept': 'application/json',
                         'Content-Type': 'application/json'
                         },
-                        body: JSON.stringify({username: user, password: pass})
+                        body: JSON.stringify({username: user, password: pass, email: email})
                       }).then(response=>response.json())
                       .then(data=>{
                           console.log(data);
-                          if('access' in data){
-                              let accessToken = data['access'];
-                              let refreshToken = data['refresh'];
-                              localStorage.setItem("access", accessToken);
-                              localStorage.setItem("refresh", refreshToken);
-                              window.location.href = "/"; // the "/" is the homepage for node http://127.0.0.1:3000
-                              alert("succesful login");
-                          }
-                          else{
-                              alert("user or pass incorrect");
-                          }
+                          window.location.href = "/login";
+                          alert("succesful registration");
                       });
                 }
             }
             
-            let myform = document.getElementById("login-form");
+            let myform = document.getElementById("register-form");
             myform.addEventListener('submit', formValidator);
 		</script>
     </body>

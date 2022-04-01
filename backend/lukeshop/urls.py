@@ -10,7 +10,6 @@ router.register(r'basket', views.BasketViewSet)
 router.register(r'orders', views.OrderViewSet)
 router.register(r'users', views.APIUserViewSet)
 
-
 urlpatterns = [
    path('', views.index, name="index"),
    path('products/<int:prodid>', views.product_individual, name="individual_product"),

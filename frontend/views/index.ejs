@@ -4,14 +4,81 @@
     <title><%= title %></title>
     <link rel='stylesheet' href='/stylesheets/style.css' />
   </head>
-  <body>
+  <body id="body">
     <h1><%= title %></h1>
     <p>Welcome to <%= title %></p>
+    <a href="/login" id="auth-link">Login</a>
+
     <script>
-      let req = "http://127.0.0.1:8000/api/products/"
-      fetch(req) // make a request to this endpoint
-				.then(response => response.json()) // with our response, get the json data returned
-				.then(data => console.log(data)); // print the json data
+	    window.userLoggedIn = false;
+
+	    function isLoggedIn(){
+		    let accessToken = localStorage.getItem("access");
+        let loginLink = document.getElementById("auth-link");
+
+        if(accessToken != null && accessToken != ""){
+        // if there is an access token in localstorage
+          window.userLoggedIn = true;
+        }
+		    if(window.userLoggedIn){
+          loginLink.innerHTML = "Logout";
+          loginLink.href = "#"
+          loginLink.onclick = logOut;
+			  }
+        else{
+          loginLink.innerHTML = "Login";
+          loginLink.href = "/login"
+        }
+	    }
+
+      function logOut(){
+        localStorage.setItem("access","");
+        localStorage.setItem("refresh","");
+        window.location.reload()
+      }
+
+	    isLoggedIn(); // when the page loads call isLoggedIn
+
+    </script>
+    <div id="products"></div>
+    <script>
+        let products = document.getElementById("products");
+        fetch('http://127.0.0.1:8000/api/products/')
+        .then(response => response.json())
+        .then(allpokemon => allpokemon.forEach(element => {
+            console.log(allpokemon)
+            
+            let productName = element.name
+            let productDesc = element.description
+            let productImage = element.image
+            let productPrice = element.price
+            let productStr = "/productindividual?id=" + element['id'];
+
+            let text = document.createElement("p")
+            let link = document.createElement("a")
+            link.innerHTML = element['name'];
+
+            products.appendChild(link);
+            link.href = productStr
+
+            show_image(productImage, 110, 110, 'pimg')
+            text.innerHTML = productDesc + " - " + "€" + productPrice
+            products.appendChild(text)
+
+        }));
+    </script>
+    
+    <script>
+    function show_image(src, width, height, alt) {
+        let products = document.getElementById("products");
+        var img = document.createElement("img");
+        img.src = src;
+        img.width = width;
+        img.height = height;
+        img.alt = alt;
+        products.appendChild(img)
+    }
+
     </script>
   </body>
 </html>

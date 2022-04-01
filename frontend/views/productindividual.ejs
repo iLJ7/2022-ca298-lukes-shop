@@ -1,0 +1,70 @@
+<div id="product"></div>
+<script>
+window.onload = ()=>{
+	let params = window.location.search;
+  let urlParams = new URLSearchParams(params);
+  let productID = urlParams.get("id");
+  // http://127.0.0.1:8000/api/products/id
+  
+  if(productID != null && typeof(productID)!= 'undefined'){
+    fetch('http://127.0.0.1:8000/api/products/'+productID)
+    .then(resp => resp.json())
+    .then(data => {
+          console.log(data);
+        if('detail' in data){
+            alert('Product not found')
+        }
+        else{
+            let product = document.getElementById("product");
+            let name = data['name'];
+            let desc = data['description'];
+            let price = data['price'];
+            let image = data['image'];
+            let title = document.createElement("h1")
+            title.innerHTML = name
+
+            let text = document.createElement("p")
+            text.innerHTML = desc + " - €" + price
+
+            product.appendChild(title)
+            product.appendChild(text)
+            show_image(image, 200, 200, 'pimg')
+
+            function show_image(src, width, height, alt) {
+                let product = document.getElementById("product");
+                var img = document.createElement("img");
+                img.src = src;
+                img.width = width;
+                img.height = height;
+                img.alt = alt;
+                product.appendChild(img)
+            
+            }        
+            
+            let addToCart = document.createElement("button");
+            
+            addToCart.innerHTML = "Add to cart";
+            product.appendChild(addToCart)
+            addToCart.onclick = ()=>{
+              fetch('http://127.0.0.1:8000/apiadd/', {
+                method: 'POST',
+                headers: {
+                  'Accept': 'application/json',
+                  'Content-Type': 'application/json',
+                  'Authorization': 'Bearer ' +localStorage.getItem("access")
+                },
+                body: JSON.stringify({
+                  "product_id": parseInt(productID)
+                })
+              })
+              .then(response=>response.json())
+              .then(data=>{
+                console.log(data)
+                window.location.reload()
+              })
+            }
+        }
+      });
+    }
+}
+</script> 
