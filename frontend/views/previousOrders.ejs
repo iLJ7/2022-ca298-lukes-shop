@@ -1,0 +1,57 @@
+<html>
+    <%- include('header') -%>
+    <head>
+        <link rel='stylesheet' href='/stylesheets/style.css' />
+    </head>
+    
+    <p id="login-prompt"></p>
+
+    <div id="order-block"></div>
+
+    <script>
+        window.userLoggedIn = false;
+    
+        function isLoggedIn(){
+            let accessToken = localStorage.getItem("access");
+            if(accessToken != null && accessToken != ""){
+                window.userLoggedIn = true;
+            }
+        }
+    
+        isLoggedIn();
+        if(!window.userLoggedIn){
+            var element = document.getElementById("nav-basket");
+            element.remove();
+            let para = document.getElementById("login-prompt");
+            para.innerHTML = "<a href='/login'>Login</a> to view previous orders."
+        }
+        
+    </script>
+
+    <script>
+        fetch('http://127.0.0.1:8000/api/orders/', {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' +localStorage.getItem("access")
+            },
+        })
+        .then(response => response.json())
+        
+        .then(data => data.forEach(element => {
+            let orderID = element.id
+            let date = element.datetime_ordered.slice(0, 10);
+            let time = element.datetime_ordered.slice(11, 19);
+            let addy = element.shipping_addr
+            let totalPrice= element.total_price
+
+            let block = document.getElementById("order-block");
+            var para = document.createElement("p");
+            para.innerHTML = "Order ID: " + orderID + " | Date: " + date + " | Time: " + time + " | Address: " + addy + " | Total Price " + "€" + totalPrice;
+
+            block.appendChild(para)
+        },console.log(data)));
+
+    </script>
+</html>

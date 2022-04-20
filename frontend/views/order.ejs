@@ -1,6 +1,12 @@
-<table id="productTable"> 
-</table>
-<p id="block"></p>
+<!DOCTYPE html>
+<html>
+  <%- include('header') -%>
+  <head>
+    <title>Order</title>
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+  </head>
+
+<body>
 
 <h1>Order</h1>
 <form id="order-form">
@@ -8,11 +14,33 @@
     <input type="text" name="shipping-address" id="shipping-addr" placeholder="Your address">
     <button type="submit">Order</button>
 </form>
+
+<table id="productTable"> 
+</table>
+<p id="block"></p>
+
+<script>
+    window.userLoggedIn = false;
+
+    function isLoggedIn(){
+        let accessToken = localStorage.getItem("access");
+        if(accessToken != null && accessToken != ""){
+            window.userLoggedIn = true;
+        }
+    }
+
+    isLoggedIn();
+    if(!window.userLoggedIn){
+        var element = document.getElementById("nav-basket");
+        element.remove();
+    }
+    
+</script>
 <script>
 		    
     function formValidator(event){
-        event.preventDefault();
 
+        event.preventDefault();
         let address = document.getElementById("shipping-addr").value;
 
         if(address == ""){
@@ -20,6 +48,20 @@
         }
 
         else{
+            fetch('http://127.0.0.1:8000/api/basket/', {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' +localStorage.getItem("access")
+            },
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log(data)
+            let address = document.getElementById("shipping-addr").value;
+            let ID = data[0].id
+
             fetch("http://127.0.0.1:8000/apicheckout/", {
                 method: 'POST',
                 headers: {
@@ -27,17 +69,25 @@
                     'Content-Type': 'application/json',
                     'Authorization': 'Bearer ' +localStorage.getItem("access")
                 },
-                body: JSON.stringify({shipping_addr: address})
-              }).then(response=>response.json())
-              .then(data=>{
-                  console.log(data);
-              });
+                body: JSON.stringify({ 
+                    basket_id: ID,
+                    shipping_addr: address
+                })
+            })
+            .then(response => response.json())
+            .then(data=>{
+                console.log(data)
+                alert('Order successful.');
+                window.location.reload()
+            })
+        })
         }
     }
     
     let myform = document.getElementById("order-form");
     myform.addEventListener('submit', formValidator);
 </script>
+
 <script>
         var counter = 0;
         fetch('http://127.0.0.1:8000/api/basket/', {
@@ -126,3 +176,5 @@
 
         }))
 </script>
+</body>
+</html>

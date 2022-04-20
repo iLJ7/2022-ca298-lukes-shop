@@ -1,20 +1,18 @@
 <!DOCTYPE html>
 <html>
+  <%- include('header') -%>
   <head>
-    <title><%= title %></title>
+    <title>NASA</title>
     <link rel='stylesheet' href='/stylesheets/style.css' />
   </head>
   <body id="body">
-    <h1><%= title %></h1>
-    <p>Welcome to <%= title %></p>
-    <a href="/login" id="auth-link">Login</a>
 
     <script>
 	    window.userLoggedIn = false;
 
 	    function isLoggedIn(){
 		    let accessToken = localStorage.getItem("access");
-        let loginLink = document.getElementById("auth-link");
+        let loginLink = document.getElementById("nav-log");
 
         if(accessToken != null && accessToken != ""){
         // if there is an access token in localstorage
@@ -22,7 +20,7 @@
         }
 		    if(window.userLoggedIn){
           loginLink.innerHTML = "Logout";
-          loginLink.href = "#"
+          loginLink.href = "/#"
           loginLink.onclick = logOut;
 			  }
         else{
@@ -38,15 +36,17 @@
       }
 
 	    isLoggedIn(); // when the page loads call isLoggedIn
-
+      if(!window.userLoggedIn){
+          var element = document.getElementById("nav-basket");
+          element.remove();
+      }
     </script>
     <div id="products"></div>
     <script>
         let products = document.getElementById("products");
         fetch('http://127.0.0.1:8000/api/products/')
         .then(response => response.json())
-        .then(allpokemon => allpokemon.forEach(element => {
-            console.log(allpokemon)
+        .then(data => data.forEach(element => {
             
             let productName = element.name
             let productDesc = element.description
@@ -54,18 +54,18 @@
             let productPrice = element.price
             let productStr = "/productindividual?id=" + element['id'];
 
-            let text = document.createElement("p")
-            let link = document.createElement("a")
-            link.innerHTML = element['name'];
+            let link = document.createElement("p");
+            let text = document.createElement("p");
 
-            products.appendChild(link);
-            link.href = productStr
-
-            show_image(productImage, 110, 110, 'pimg')
+            show_image(productImage, 150, 150, 'pimg')
+  
+            link.innerHTML = "<a href='" + productStr + "'>More</a>"
             text.innerHTML = productDesc + " - " + "€" + productPrice
+           
+            products.appendChild(link)
             products.appendChild(text)
 
-        }));
+        },console.log(data)));
     </script>
     
     <script>
@@ -77,8 +77,8 @@
         img.height = height;
         img.alt = alt;
         products.appendChild(img)
-    }
 
+    }
     </script>
   </body>
 </html>

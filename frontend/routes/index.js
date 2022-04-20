@@ -30,4 +30,8 @@ router.get('/register', function(req, res, next){
   res.render('register');
 });
 
+router.get('/previousorders', function(req, res, next){
+  res.render('previousorders');
+});
+
 module.exports = router;

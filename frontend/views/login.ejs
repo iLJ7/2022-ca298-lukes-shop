@@ -1,6 +1,8 @@
 <html>
     <head>
 			<title>Login Page</title>
+            <%- include('header') -%>
+            <link rel='stylesheet' href='/stylesheets/style.css' />
     </head>
     <body>
         <h1>Login</h1>
@@ -11,6 +13,24 @@
             <input type="password" name="password-input" id="password" placeholder="Your password">
             <button type="submit">Login</button>
         </form>
+
+        <script>
+            window.userLoggedIn = false;
+        
+            function isLoggedIn(){
+                let accessToken = localStorage.getItem("access");
+                if(accessToken != null && accessToken != ""){
+                    window.userLoggedIn = true;
+                }
+            }
+        
+            isLoggedIn();
+            if(!window.userLoggedIn){
+                var element = document.getElementById("nav-basket");
+                element.remove();
+            }
+            
+        </script>
 		<script>
 		    
             function formValidator(event){

@@ -1,8 +1,17 @@
-<table id="productTable"> 
-</table>
-<p id="block"></p>
+<!DOCTYPE html>
+<html>
+  <%- include('header') -%>
+  <head>
+    <title>Basket</title>
+    <link rel='stylesheet' href='/stylesheets/style.css'/>
+  </head>
 
-<script>
+  <body>
+     <table id="productTable"> 
+     </table>
+     <p id="block"></p>
+
+     <script>
         var counter = 0;
         fetch('http://127.0.0.1:8000/api/basket/', {
             method: 'GET',
@@ -29,7 +38,7 @@
                 var cell3 = row.insertCell(2)
                 var cell4 = row.insertCell(3)
 
-                cell1.innerHTML = 'Image'
+                cell1.innerHTML = "Image"
                 cell2.innerHTML = "Total: €" + productPrice
                 cell3.innerHTML = "Quantity: " + quantity
 
@@ -85,8 +94,10 @@
             var totalRowCount = table.rows.length;
 
             if (totalRowCount == 0) {
-                text.innerHTML = "Basket is empty."
+                text.innerHTML = "Basket is empty. <a href='/#'>Return home.</a>"
             }
 
         }))
-</script>
+     </script>
+     </body>
+</html>
